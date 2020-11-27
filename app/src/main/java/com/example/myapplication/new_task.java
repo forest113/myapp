@@ -16,6 +16,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import static java.util.logging.Logger.global;
 
@@ -55,9 +56,9 @@ public class new_task extends AppCompatActivity {
                     startTime[i] = Integer.parseInt(date[2-i]);
                 }
                 String t[] = txtTime.getText().toString().trim().split(":");
-                startTime[3] = Integer.parseInt(t[0]);
+                startTime[3] = Integer.parseInt(t[0])-1;
                 startTime[4] = Integer.parseInt(t[1]);
-                startTime[2]--;
+                startTime[1]--;
                 int endT[] = {0,0,0,0,0};
                 endT = startTime;
                 endT[3]++;
@@ -65,15 +66,18 @@ public class new_task extends AppCompatActivity {
                 task.setTime(txtTime.getText().toString().trim());
                 task.setTitle(txtTitle.getText().toString().trim());
                 task.setDescrip(textDescrip.getText().toString().trim());
-                ref.push().setValue(task);
+                ref.child(task.getTitle()).setValue(task);
                 Calendar beginTime = Calendar.getInstance();
                 beginTime.set(startTime[0], startTime[1], startTime[2], startTime[3], startTime[4]);
                 Calendar endTime = Calendar.getInstance();
-                endTime.set(endT[0], endT[1], endT[2], endT[3], endT[4]);
+                endTime.set(endT[0], endT[1], endT[2], endT[3]+1, endT[4]);
+                Date currentTime = Calendar.getInstance().getTime();
+                //long difInMs = endTime.getTimeInMillis() - currentTime.getTime();
                 Intent intent = new Intent(Intent.ACTION_INSERT);
                         intent.setData(CalendarContract.Events.CONTENT_URI);
                         intent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginTime.getTimeInMillis());
                         intent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endTime.getTimeInMillis());
+                        intent.putExtra(CalendarContract.Reminders.MINUTES, 60);
                         intent.putExtra(CalendarContract.Events.TITLE, task.getTitle().toString());
                         intent.putExtra(CalendarContract.Events.DESCRIPTION, task.getDescrip().toString());
                 if(intent.resolveActivity(getPackageManager()) != null) {

@@ -3,6 +3,7 @@ package com.example.myapplication;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -17,6 +18,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     private FloatingActionButton button;
@@ -41,6 +43,16 @@ public class MainActivity extends AppCompatActivity {
                 R.id.txt, list);
         listview.setAdapter(adapter);
 
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String selectedItem = (String) parent.getItemAtPosition(position);
+                Intent intent = new Intent(getBaseContext(), task_info.class );
+                intent.putExtra("task_title", selectedItem);
+                startActivity(intent);
+            }
+        });
+
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Tasks");
         ref.addValueEventListener(new ValueEventListener() {
             @Override
@@ -48,7 +60,8 @@ public class MainActivity extends AppCompatActivity {
                 list.clear();
                 Task t = new Task();
                 for(DataSnapshot datasnap : snapshot.getChildren()) {
-                    t.setTitle((datasnap.getValue(Task.class)).getTitle());
+                    t = (Objects.requireNonNull(datasnap.getValue(Task.class)));
+                    //t.setTitle(datasnap.getKey());
                     list.add(t.getTitle());
                 }
                 adapter.notifyDataSetChanged();
