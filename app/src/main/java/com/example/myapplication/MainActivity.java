@@ -18,6 +18,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Enumeration;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
@@ -61,8 +65,22 @@ public class MainActivity extends AppCompatActivity {
                 Task t = new Task();
                 for(DataSnapshot datasnap : snapshot.getChildren()) {
                     t = (Objects.requireNonNull(datasnap.getValue(Task.class)));
-                    //t.setTitle(datasnap.getKey());
-                    list.add(t.getTitle());
+                    String date[] = t.getDate().split("-");
+                    int startTime[] = {0,0,0,0,0};
+                    for(int i=0; i<3; i++) {
+                        startTime[i] = Integer.parseInt(date[2-i]);
+                    }
+                    String time[] = t.getTime().split(":");
+                    startTime[3] = Integer.parseInt(time[0])-1;
+                    startTime[4] = Integer.parseInt(time[1]);
+                    startTime[1]--;
+                    Calendar beginTime = Calendar.getInstance();
+                    beginTime.set(startTime[0], startTime[1], startTime[2], startTime[3], startTime[4]);
+                    Date currentTime = Calendar.getInstance().getTime();
+                    if(beginTime.getTimeInMillis() > currentTime.getTime())
+                        list.add(t.getTitle());
+                    else
+                        ref.child("Tasks").child(t.getTitle()).removeValue();
                 }
                 adapter.notifyDataSetChanged();
             }
@@ -71,6 +89,9 @@ public class MainActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
+
+
+
         });
     }
 

@@ -87,7 +87,7 @@
             android:layout_height="59dp"
             android:layout_weight="1"
             android:text="Save"
-            app:backgroundTint="#353939" />
+            app:backgroundTint="#000000" />
 
         <Space
             android:layout_width="wrap_content"
@@ -100,7 +100,7 @@
             android:layout_height="59dp"
             android:layout_weight="1"
             android:text="Cancel"
-            app:backgroundTint="#353939" />
+            app:backgroundTint="#000000" />
 
         <Space
             android:layout_width="wrap_content"
